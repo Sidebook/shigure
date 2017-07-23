@@ -197,7 +197,7 @@ class Notifier(threading.Thread):
     def send_notification(self, user_id):
         print('send notification to {}', user_id)
         setting = user_settings[user_id]
-        if setting['latitude'] is None or setting['longtitude'] is None:
+        if setting['latitude'] is None or setting['longitude'] is None:
             line_bot_api.push_message(user_id, TextSendMessage(text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。'))
         
         r = shigurecore.responce('傘いる？', latitude=setting['latitude'], longitude=['longitude'])

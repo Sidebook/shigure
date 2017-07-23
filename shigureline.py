@@ -71,20 +71,20 @@ def callback():
         
         ## recieved location message
         if isinstance(message, LocationMessage):
-            add_user_setting(user_id, latitude=message.latitude, longititude=message.longtitude)
+            add_user_setting(user_id, latitude=message.latitude, longititude=message.longitude)
 
     return 'OK'
 
 user_settings = {}
 
-def add_user_setting(user_id, latitude=None, longtitude=None, schedule=None):
+def add_user_setting(user_id, latitude=None, longitude=None, schedule=None):
     setting = {}
     if not user_id:
         return
 
     already_exists = user_id in user_settings
     overwrite_latitude = False
-    overwrite_longtitude = False
+    overwrite_longitude = False
     overwrite_schedule = False
 
     if latitude is not None:
@@ -92,10 +92,10 @@ def add_user_setting(user_id, latitude=None, longtitude=None, schedule=None):
             overwrite_latitude = 'latitude' in user_settings[user_id]
         setting['latitude'] = latitude
     
-    if longtitude is not None:
+    if longitude is not None:
         if already_exists:
-            overwrite_longtitude = 'longtitude' in user_settings[user_id]
-        setting['longtitude'] = longtitude
+            overwrite_longitude = 'longitude' in user_settings[user_id]
+        setting['longitude'] = longitude
     
     if schedule is not None:
         if already_exists:
@@ -105,20 +105,20 @@ def add_user_setting(user_id, latitude=None, longtitude=None, schedule=None):
     user_settings[userID] = setting
 
     if already_exists:
-        print ('overwrited user setting [{}]: latitude: {}{} longtitude: {}{} schedule: {}{}'.format(
+        print ('overwrited user setting [{}]: latitude: {}{} longitude: {}{} schedule: {}{}'.format(
             user_id,
             latitude,
             '(overwrite)' if overwrite_latitude else '',
-            longtitude,
-            '(overwrite)' if overwrite_longtitude else '',
+            longitude,
+            '(overwrite)' if overwrite_longitude else '',
             schedule,
             '(overwrite)' if overwrite_schedule else '',
         ))
     else:
-        print ('added user setting [{}]: latitude: {} longtitude: {} schedule: {}'.format(
+        print ('added user setting [{}]: latitude: {} longitude: {} schedule: {}'.format(
             user_id,
             latitude,
-            longtitude,
+            longitude,
             schedule
         ))
 

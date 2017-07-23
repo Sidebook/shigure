@@ -34,7 +34,7 @@ class Forecast:
         time_start=None,
         time_end=None,
         latitude=0,
-        longtitude=0
+        longitude=0
         ):
         self.status = status
         self.pop = pop
@@ -43,7 +43,7 @@ class Forecast:
         self.time_start = time_start
         self.time_end = time_end
         self.latitude = latitude
-        self.longtitude = longtitude
+        self.longitude = longitude
         self.rain_level = Forecast.RAIN_UNKOWN
         self.rain_begin_time = None
         
@@ -75,7 +75,7 @@ class Forecast:
             'rain begin time: {}\n'.format(
                 status[self.status],
                 self.latitude,
-                self.longtitude,
+                self.longitude,
                 self.time_start,
                 self.time_end,
                 self.pop,
@@ -85,14 +85,14 @@ class Forecast:
 
         return s
 
-    def get(self, latitude, longtitude, length=settings.FORECAST_LENGTH):
+    def get(self, latitude, longitude, length=settings.FORECAST_LENGTH):
         self.latitude = latitude
-        self.longtitude = longtitude
+        self.longitude = longitude
         url = settings.WEATHER_ENDPOINT.format(
             username=settings.WEATHER_USERNAME,
             password=settings.WEATHER_PASSWORD,
             latitude=latitude,
-            longtitude=longtitude)
+            longitude=longitude)
         payload = {
             'language': 'en-US',
             'units': 'm'
@@ -171,11 +171,11 @@ class Responce:
     def __str__(self):
         return self.message
 
-def responce(message, latitude=None, longtitude=None):
+def responce(message, latitude=None, longitude=None):
     r = Responce()
     if '傘いる' in message:
         print('responce mode: forecast')
-        if latitude is None or longtitude is None:
+        if latitude is None or longitude is None:
             return Responce(
                 message='まずあなたの居る場所を教えてください',
                 status=Responce.UNKOWN_LOCATION
@@ -187,7 +187,7 @@ def responce(message, latitude=None, longtitude=None):
             )
         else:
             f = Forecast()
-            f.get(latitude, longtitude)
+            f.get(latitude, longitude)
             print(f)
             
             if (f.status != Forecast.OK):
@@ -239,5 +239,5 @@ def responce(message, latitude=None, longtitude=None):
 
 if __name__ == '__main__':
     while True:
-        r = responce(input('>> '),latitude=38.27, longtitude=140.85)
+        r = responce(input('>> '),latitude=38.27, longitude=140.85)
         print(r)

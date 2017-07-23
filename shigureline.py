@@ -133,6 +133,8 @@ def add_user_setting(user_id, latitude=None, longitude=None, schedule=None):
             longitude,
             schedule
         ))
+    
+    print(json.dump(user_settings, indent=2))
 
 def load_user_settings():
     with open('usersettings.json') as f:

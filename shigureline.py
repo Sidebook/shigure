@@ -176,6 +176,17 @@ def save_user_settings():
         json.dump(user_settings, f, indent=4)
     print('saved user settings.')
 
+class JST(dt.tzinfo):
+    def utcoffset(self, dt):
+        return timedelta(hours=9)
+
+    def dst(self, dt):
+        return timedelta(0)
+
+    def tzname(self, dt):
+        return 'JST'
+
+
 class Notifier(threading.Thread):
     def __init__(self):
         super(Notifier, self).__init__()
@@ -192,7 +203,7 @@ class Notifier(threading.Thread):
     def run(self):
         print('start running notifier')
         while True:
-            now = dt.datetime.now()
+            now = dt.datetime.now(JST())
             hour = now.hour
             minute = now.minute
             print('check notification {0:2d}:{1:2d}'.format(hour, minute))

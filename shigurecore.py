@@ -173,7 +173,6 @@ class Responce:
 
 def responce(message, latitude=None, longtitude=None):
     r = Responce()
-    print('recieved request')
     if '傘いる' in message:
         print('responce mode: forecast')
         if latitude is None or longtitude is None:

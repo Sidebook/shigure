@@ -102,7 +102,7 @@ def add_user_setting(user_id, latitude=None, longitude=None, schedule=None):
             overwrite_schedule = 'schedule' in user_settings[user_id]
         setting['schedule'] = schedule
     
-    user_settings[userID] = setting
+    user_settings[user_id] = setting
 
     if already_exists:
         print ('overwrited user setting [{}]: latitude: {}{} longitude: {}{} schedule: {}{}'.format(

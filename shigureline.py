@@ -195,6 +195,7 @@ class Notifier(threading.Thread):
             now = dt.datetime.now()
             hour = now.hour
             minute = now.minute
+            print('check notification {0:2d}:{0:2d}', hour, minute)
             if self.minute != minute:
                 self.minute = minute
                 for user_id, v in user_settings.items():

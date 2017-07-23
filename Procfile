@@ -1,1 +1,1 @@
-web: gunicorn shigreline.py:app --log-file=-
+web: gunicorn shigureline:app --log-file=-

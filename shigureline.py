@@ -177,13 +177,13 @@ def save_user_settings():
     print('saved user settings.')
 
 class JST(dt.tzinfo):
-    def utcoffset(self, dt):
+    def utcoffset(self, dat):
         return dt.timedelta(hours=9)
 
-    def dst(self, dt):
+    def dst(self, dat):
         return dt.timedelta(0)
 
-    def tzname(self, dt):
+    def tzname(self, dat):
         return 'JST'
 
 

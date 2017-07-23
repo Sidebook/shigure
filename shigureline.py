@@ -144,6 +144,9 @@ def save_user_settings():
         json.dump(user_settings, f, indent=4)
     print('saved user settings.')
 
+load_user_settings()
+atexit.register(save_user_settings)
+
 if __name__ == "__main__":
     arg_parser = ArgumentParser(
         usage='Usage: python ' + __file__ + ' [--port <port>] [--help]'
@@ -152,6 +155,5 @@ if __name__ == "__main__":
     arg_parser.add_argument('-d', '--debug', default=False, help='debug')
     options = arg_parser.parse_args()
 
-    load_user_settings()
-    atexit.register(save_user_settings)
+
     app.run(debug=options.debug, port=options.port)

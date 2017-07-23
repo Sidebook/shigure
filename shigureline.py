@@ -69,18 +69,15 @@ def callback():
                 latitude = user_settings[user_id]['latitude']
                 longitude = user_settings[user_id]['longitude']
             r = shigurecore.responce(message.text, latitude=latitude, longitude=longitude)
+            text = r.message
+            if r.staus == shigurecore.Responce.UNKOWN_LOCATION:
+                text += '\n+マークから「位置情報」を選択して位置情報を設定してください！'
 
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text=r.message)
+                TextSendMessage(text=text)
             )
 
-            if r.staus == shigurecore.Responce.UNKOWN_LOCATION:
-                line_bot_api.reply_message(
-                    event.reply_token,
-                    TextSendMessage(text='+マークから「位置情報」を選択して位置情報を設定してください！')
-                )
-        
         ## recieved location message
         if isinstance(message, LocationMessage):
             add_user_setting(user_id, latitude=message.latitude, longitude=message.longitude)

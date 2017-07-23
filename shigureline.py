@@ -71,7 +71,7 @@ def callback():
         
         ## recieved location message
         if isinstance(message, LocationMessage):
-            add_user_setting(user_id, latitude=message.latitude, longititude=message.longitude)
+            add_user_setting(user_id, latitude=message.latitude, longitude=message.longitude)
 
     return 'OK'
 

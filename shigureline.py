@@ -68,11 +68,11 @@ def callback():
         if not isinstance(event.message, TextMessage):
             continue
 
-        r = shigurecore.responce(text=event.message.text)
+        r = shigurecore.responce(event.message.text)
 
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(r.message)
+            TextSendMessage(text=r.message)
         )
 
     return 'OK'

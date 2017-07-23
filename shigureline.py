@@ -195,7 +195,7 @@ class Notifier(threading.Thread):
         self.minute = 0
 
     def send_notification(self, user_id):
-        print('send notification to {}', user_id)
+        print('send notification to {}'.format(user_id))
         setting = user_settings[user_id]
         if setting['latitude'] is None or setting['longitude'] is None:
             line_bot_api.push_message(user_id, TextSendMessage(text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。'))
@@ -203,6 +203,8 @@ class Notifier(threading.Thread):
         r = shigurecore.responce('傘いる？', latitude=setting['latitude'], longitude=['longitude'])
         if r.staus == shigurecore.Responce.NEED_UMBRELLA:
             line_bot_api.push_message(user_id, TextSendMessage(text='こんにちは\n' + r.message))
+        else:
+            print('canceled notification: status: {}'.format(r.staus))
 
     def run(self):
         print('start running notifier')

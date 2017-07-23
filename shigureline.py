@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-
-#  Licensed under the Apache License, Version 2.0 (the "License"); you may
-#  not use this file except in compliance with the License. You may obtain
-#  a copy of the License at
-#
-#       https://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#  License for the specific language governing permissions and limitations
-#  under the License.
-
 from __future__ import unicode_literals
 
 import os
@@ -26,10 +12,12 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, LocationMessage, TextSendMessage,
 )
 
 import shigurecore
+import json
+import atexit
 
 app = Flask(__name__)
 
@@ -63,20 +51,86 @@ def callback():
 
     # if event is MessageEvent and message is TextMessage, then echo text
     for event in events:
+
+        ## recieved message event
         if not isinstance(event, MessageEvent):
             continue
-        if not isinstance(event.message, TextMessage):
-            continue
 
-        r = shigurecore.responce(event.message.text)
+        user_id = event.source.user_id
+        message = event.message
+        print('recieved message from {}'.format(user_id))
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=r.message)
-        )
+        ## recieved text message
+        if isinstance(message, TextMessage):
+            r = shigurecore.responce(message.text)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=r.message)
+            )
+        
+        ## recieved location message
+        if isinstance(message, LocationMessage):
+            add_user_setting(user_id, latitude=message.latitude, longititude=message.longtitude)
 
     return 'OK'
 
+user_settings = {}
+
+def add_user_setting(user_id, latitude=None, longtitude=None, schedule=None):
+    setting = {}
+    if not user_id:
+        return
+
+    already_exists = user_id in user_settings
+    overwrite_latitude = False
+    overwrite_longtitude = False
+    overwrite_schedule = False
+
+    if latitude is not None:
+        if already_exists:
+            overwrite_latitude = 'latitude' in user_settings[user_id]
+        setting['latitude'] = latitude
+    
+    if longtitude is not None:
+        if already_exists:
+            overwrite_longtitude = 'longtitude' in user_settings[user_id]
+        setting['longtitude'] = longtitude
+    
+    if schedule is not None:
+        if already_exists:
+            overwrite_schedule = 'schedule' in user_settings[user_id]
+        setting['schedule'] = schedule
+    
+    user_settings[userID] = setting
+
+    if already_exists:
+        print ('overwrited user setting [{}]: latitude: {}{} longtitude: {}{} schedule: {}{}'.format(
+            user_id,
+            latitude,
+            '(overwrite)' if overwrite_latitude else '',
+            longtitude,
+            '(overwrite)' if overwrite_longtitude else '',
+            schedule,
+            '(overwrite)' if overwrite_schedule else '',
+        ))
+    else:
+        print ('added user setting [{}]: latitude: {} longtitude: {} schedule: {}'.format(
+            user_id,
+            latitude,
+            longtitude,
+            schedule
+        ))
+
+def load_user_settings():
+    with open('usersettings.json') as f:
+        user_settings = json.load(f)
+    print('loaded user settings.')
+
+def save_user_settings():
+    with open('usersettings.json', 'w') as f:
+        json.dump(user_settings, f, indent=4)
+    print('saved user settings.')
 
 if __name__ == "__main__":
     arg_parser = ArgumentParser(
@@ -86,4 +140,6 @@ if __name__ == "__main__":
     arg_parser.add_argument('-d', '--debug', default=False, help='debug')
     options = arg_parser.parse_args()
 
+    load_user_settings()
+    atexit.register(save_user_settings)
     app.run(debug=options.debug, port=options.port)

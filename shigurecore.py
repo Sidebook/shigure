@@ -189,6 +189,7 @@ def responce(message, latitude=None, longitude=None):
             f.get(latitude, longitude)
             
             if (f.status != Forecast.OK):
+                print('Internal Error: {}'.format(f))
                 return Responce(
                     message='すいません...\nなにか問題が発生していてお答えできません...',
                     status=Responce.INTERNAL_ERROR

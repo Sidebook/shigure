@@ -200,7 +200,7 @@ class Notifier(threading.Thread):
         if setting['latitude'] is None or setting['longitude'] is None:
             line_bot_api.push_message(user_id, TextSendMessage(text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。'))
         
-        r = shigurecore.responce('傘いる？', latitude=setting['latitude'], longitude=['longitude'])
+        r = shigurecore.responce('傘いる？', latitude=setting['latitude'], longitude=setting['longitude'])
         if r.staus == shigurecore.Responce.NEED_UMBRELLA:
             line_bot_api.push_message(user_id, TextSendMessage(text='こんにちは\n' + r.message))
         else:

@@ -76,7 +76,7 @@ def callback():
                     )
                 else:
                     hour = int(match.group(1))
-                    minute = int(math.group(2))
+                    minute = int(match.group(2))
                     if hour >= 0 and hour < 24 and minute >= 0 and minute <= 59:
                         add_user_setting(user_id, schedule_hour=hour, schedule_minute=minute)
                         line_bot_api.reply_message(
@@ -115,7 +115,7 @@ def callback():
 
     return 'OK'
 
-def add_user_setting(user_id, latitude=None, longitude=None, schedule_hour=None, schedule_miute=None):
+def add_user_setting(user_id, latitude=None, longitude=None, schedule_hour=None, schedule_minute=None):
     setting = {}
     if not user_id:
         return
@@ -155,7 +155,7 @@ def add_user_setting(user_id, latitude=None, longitude=None, schedule_hour=None,
             '(overwrite)' if overwrite_latitude else '',
             longitude,
             '(overwrite)' if overwrite_longitude else '',
-            schedule_hour, schedule_miute,
+            schedule_hour, schedule_minute,
             '(overwrite)' if overwrite_schedule_hour else '',
         ))
     else:
@@ -163,7 +163,7 @@ def add_user_setting(user_id, latitude=None, longitude=None, schedule_hour=None,
             user_id,
             latitude,
             longitude,
-            schedule_hour, schedule_miute,
+            schedule_hour, schedule_minute,
         ))
 
 def load_user_settings():
@@ -177,17 +177,17 @@ def save_user_settings():
     print('saved user settings.')
 
 class Notifier(threading.Thread):
-    def __init__(self, n, t):
-        super(TestThread, self).__init__()
+    def __init__(self):
+        super(Notifier, self).__init__()
         self.minute = 0
 
-    def send_notification(user_id):
+    def send_notification(self, user_id):
         print('send notification to {}', user_id)
         r = shigurecore.responce('傘いる？')
-        if r.status == shigurecore.Responce.NEED_UMBRELLA:
-            line_bot_api.push_message(user_id, text='こんにちは\n' + r.message)
-        if r.status == shigurecore.Responce.UNKOWN_LOCATION:
-            line_bot_api.push_message(user_id, text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。')
+        if r.staus == shigurecore.Responce.NEED_UMBRELLA:
+            line_bot_api.push_message(user_id, TextSendMessage(text='こんにちは\n' + r.message))
+        if r.staus == shigurecore.Responce.UNKOWN_LOCATION:
+            line_bot_api.push_message(user_id, TextSendMessage(text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。'))
 
     def run(self):
         print('start running notifier')
@@ -206,6 +206,7 @@ class Notifier(threading.Thread):
 
 load_user_settings()
 atexit.register(save_user_settings)
+Notifier().run()
 
 if __name__ == "__main__":
     arg_parser = ArgumentParser(

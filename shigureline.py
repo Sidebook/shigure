@@ -34,6 +34,7 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 parser = WebhookParser(channel_secret)
 
+user_settings = {}
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -62,20 +63,34 @@ def callback():
 
         ## recieved text message
         if isinstance(message, TextMessage):
-            r = shigurecore.responce(message.text)
+            latitude = None
+            longitude = None
+            if user_id in user_settings:
+                latitude = user_settings[user_id]['latitude']
+                longitude = user_settings[user_id]['longitude']
+            r = shigurecore.responce(message.text, latitude=latitude, longitude=longitude)
 
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=r.message)
             )
+
+            if r.staus == shigurecore.Responce.UNKOWN_LOCATION:
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text='+マークから「位置情報」を選択して位置情報を設定してください！')
+                )
         
         ## recieved location message
         if isinstance(message, LocationMessage):
             add_user_setting(user_id, latitude=message.latitude, longitude=message.longitude)
 
-    return 'OK'
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text='位置情報を設定しました！')
+            )
 
-user_settings = {}
+    return 'OK'
 
 def add_user_setting(user_id, latitude=None, longitude=None, schedule=None):
     setting = {}

@@ -1,1 +1,1 @@
-web: gunicorn shigureline:app --log-file=-
+web: gunicorn -w 1 shigureline:app --log-file=-

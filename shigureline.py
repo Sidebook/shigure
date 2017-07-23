@@ -121,6 +121,8 @@ def add_user_setting(user_id, latitude=None, longitude=None, schedule_hour=None,
         return
 
     already_exists = user_id in user_settings
+    if already_exists:
+        setting = user_settings[user_id]
     overwrite_latitude = False
     overwrite_longitude = False
     overwrite_schedule_hour = False
@@ -194,11 +196,13 @@ class Notifier(threading.Thread):
 
     def send_notification(self, user_id):
         print('send notification to {}', user_id)
-        r = shigurecore.responce('傘いる？')
+        setting = user_settings['user_id']
+        if setting['latitude'] is None or setting['longtitude'] is None:
+            line_bot_api.push_message(user_id, TextSendMessage(text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。'))
+        
+        r = shigurecore.responce('傘いる？', latitude=setting['latitude'], longitude=['longtitude'])
         if r.staus == shigurecore.Responce.NEED_UMBRELLA:
             line_bot_api.push_message(user_id, TextSendMessage(text='こんにちは\n' + r.message))
-        if r.staus == shigurecore.Responce.UNKOWN_LOCATION:
-            line_bot_api.push_message(user_id, TextSendMessage(text='通知の設定がされていますが、位置情報が設定されていません。＋マークから位置情報を設定してください。'))
 
     def run(self):
         print('start running notifier')

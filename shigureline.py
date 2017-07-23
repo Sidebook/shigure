@@ -206,7 +206,7 @@ class Notifier(threading.Thread):
 
 load_user_settings()
 atexit.register(save_user_settings)
-Notifier().run()
+Notifier().start()
 
 if __name__ == "__main__":
     arg_parser = ArgumentParser(
